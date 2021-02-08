@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"os"
 	"reflect"
 	"runtime"
 	"testing"
@@ -490,90 +489,6 @@ func TestCursor_Get_op_Set_bytesBuffer(t *testing.T) {
 	}
 }
 
-func TestCursor_Get_DupFixed(t *testing.T) {
-	env := setup(t)
-	defer clean(env, t)
-
-	const datasize = 16
-	pagesize := os.Getpagesize()
-	numitems := (2 * pagesize / datasize) + 1
-
-	var dbi DBI
-	key := []byte("key")
-	err := env.Update(func(txn *Txn) (err error) {
-		dbi, err = txn.OpenDBI("test", DupSort|DupFixed|Create, nil, nil)
-		if err != nil {
-			return err
-		}
-
-		for i := int64(0); i < int64(numitems); i++ {
-			err = txn.Put(dbi, key, []byte(fmt.Sprintf("%016x", i)), 0)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
-	if err != nil {
-		t.Error(err)
-	}
-
-	var items [][]byte
-	err = env.View(func(txn *Txn) (err error) {
-		cur, err := txn.OpenCursor(dbi)
-		if err != nil {
-			return err
-		}
-		defer cur.Close()
-
-		for {
-			k, first, err := cur.Get(nil, nil, NextNoDup)
-			if IsNotFound(err) {
-				return nil
-			}
-			if err != nil {
-				return err
-			}
-
-			if string(k) != string(key) {
-				return fmt.Errorf("key: %s", k)
-			}
-
-			stride := len(first)
-
-			for {
-				_, v, err := cur.Get(nil, nil, NextMultiple)
-				if IsNotFound(err) {
-					break
-				}
-				if err != nil {
-					return err
-				}
-
-				multi := WrapMulti(v, stride)
-				for i := 0; i < multi.Len(); i++ {
-					items = append(items, multi.Val(i))
-				}
-			}
-		}
-	})
-	if err != nil {
-		t.Error(err)
-	}
-
-	if len(items) != numitems {
-		t.Errorf("unexpected number of items: %d (!= %d)", len(items), numitems)
-	}
-
-	for i, b := range items {
-		expect := fmt.Sprintf("%016x", i)
-		if string(b) != expect {
-			t.Errorf("unexpected value: %q (!= %q)", b, expect)
-		}
-	}
-}
-
 func TestCursor_Get_reverse(t *testing.T) {
 	env := setup(t)
 	defer clean(env, t)
@@ -631,73 +546,6 @@ func TestCursor_Get_reverse(t *testing.T) {
 		t.Errorf("unexpected items %q (!= %q)", items, expect)
 	}
 }
-
-//func TestCursor_PutMulti(t *testing.T) {
-//	env := setup(t)
-//	defer clean(env, t)
-//
-//	key := []byte("k")
-//	items := [][]byte{
-//		[]byte("v0"),
-//		[]byte("v2"),
-//		[]byte("v1"),
-//	}
-//	page := bytes.Join(items, nil)
-//	stride := 2
-//
-//	var dbi DBI
-//	err := env.Update(func(txn *Txn) (err error) {
-//		dbi, err = txn.OpenDBISimple("test2", Create|DupSort|DupFixed)
-//		if err != nil {
-//			return err
-//		}
-//
-//		cur, err := txn.OpenCursor(dbi)
-//		if err != nil {
-//			return err
-//		}
-//		defer cur.Close()
-//
-//		return cur.PutMulti(key, page, stride, 0)
-//	})
-//	if err != nil {
-//		t.Error(err)
-//	}
-//
-//	expect := [][]byte{
-//		[]byte("v0"),
-//		[]byte("v1"),
-//		[]byte("v2"),
-//	}
-//	var dbitems [][]byte
-//	err = env.View(func(txn *Txn) (err error) {
-//		cur, err := txn.OpenCursor(dbi)
-//		if err != nil {
-//			return err
-//		}
-//		defer cur.Close()
-//
-//		for {
-//			k, v, err := cur.Get(nil, nil, Next)
-//			if IsNotFound(err) {
-//				return nil
-//			}
-//			if err != nil {
-//				return err
-//			}
-//			if string(k) != "k" {
-//				return fmt.Errorf("key: %q", k)
-//			}
-//			dbitems = append(dbitems, v)
-//		}
-//	})
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	if !reflect.DeepEqual(dbitems, expect) {
-//		t.Errorf("unexpected items: %q (!= %q)", dbitems, items)
-//	}
-//}
 
 func TestCursor_Del(t *testing.T) {
 	env := setup(t)

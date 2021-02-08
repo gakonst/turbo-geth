@@ -21,12 +21,10 @@ const (
 	GetBoth      = C.MDBX_GET_BOTH       // Get the key as well as the value (DupSort).
 	GetBothRange = C.MDBX_GET_BOTH_RANGE // Get the key and the nearsest value (DupSort).
 	GetCurrent   = C.MDBX_GET_CURRENT    // Get the key and value at the current position.
-	GetMultiple  = C.MDBX_GET_MULTIPLE   // Get up to a page dup values for key at current position (DupFixed).
 	Last         = C.MDBX_LAST           // Last item.
 	LastDup      = C.MDBX_LAST_DUP       // Position at last value of current key (DupSort).
 	Next         = C.MDBX_NEXT           // Next value.
 	NextDup      = C.MDBX_NEXT_DUP       // Next value of the current key (DupSort).
-	NextMultiple = C.MDBX_NEXT_MULTIPLE  // Get key and up to a page of values from the next cursor position (DupFixed).
 	NextNoDup    = C.MDBX_NEXT_NODUP     // The first value of the next key (DupSort).
 	Prev         = C.MDBX_PREV           // The previous item.
 	PrevDup      = C.MDBX_PREV_DUP       // The previous item of the current key (DupSort).
@@ -269,29 +267,6 @@ func (c *Cursor) PutReserve(key []byte, n int, flags uint) ([]byte, error) {
 	b := getBytes(c.txn.val)
 	*c.txn.val = C.MDBX_val{}
 	return b, nil
-}
-
-// PutMulti stores a set of contiguous items with stride size under key.
-// PutMulti panics if len(page) is not a multiple of stride.  The cursor's
-// database must be DupFixed and DupSort.
-//
-// See mdb_cursor_put.
-func (c *Cursor) PutMulti(key []byte, page []byte, stride int, flags uint) error {
-	if len(key) == 0 {
-		return c.putNilKey(flags)
-	}
-	if len(page) == 0 {
-		page = []byte{0}
-	}
-
-	vn := WrapMulti(page, stride).Len()
-	ret := C.mdbxgo_cursor_putmulti(
-		c._c,
-		(*C.char)(unsafe.Pointer(&key[0])), C.size_t(len(key)),
-		(*C.char)(unsafe.Pointer(&page[0])), C.size_t(vn), C.size_t(stride),
-		C.MDBX_put_flags_t(flags|C.MDBX_MULTIPLE),
-	)
-	return operrno("mdbxgo_cursor_putmulti", ret)
 }
 
 // Del deletes the item referred to by the cursor from the database.

@@ -26,7 +26,6 @@ const (
 
 	ReverseKey = C.MDBX_REVERSEKEY // Use reverse string keys.
 	DupSort    = C.MDBX_DUPSORT    // Use sorted duplicates.
-	DupFixed   = C.MDBX_DUPFIXED   // Duplicate items have a fixed size (DupSort).
 	ReverseDup = C.MDBX_REVERSEDUP // Reverse duplicate values (DupSort).
 	Create     = C.MDBX_CREATE     // Create DB if not already existing.
 	DBAccede   = C.MDBX_DB_ACCEDE  // Use sorted duplicates.

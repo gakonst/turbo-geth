@@ -677,7 +677,7 @@ func TestTxn_Flags(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	dbflags := uint(ReverseKey | ReverseDup | DupSort | DupFixed)
+	dbflags := uint(ReverseKey | ReverseDup | DupSort)
 	err = env.Update(func(txn *Txn) (err error) {
 		db, err := txn.OpenDBI("testdb", dbflags|Create, nil, nil)
 		if err != nil {
