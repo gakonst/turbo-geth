@@ -46,8 +46,8 @@ func openDatabase(path string, applyMigrations bool) *ethdb.ObjectDatabase {
 }
 
 func openKV(path string, exclusive bool) ethdb.KV {
-	if database == "mdbx" {
-		opts := ethdb.NewMDBX().Path(path)
+	if database == "lmdb" {
+		opts := ethdb.NewLMDB().Path(path)
 		if exclusive {
 			opts = opts.Exclusive()
 		}
@@ -62,7 +62,7 @@ func openKV(path string, exclusive bool) ethdb.KV {
 		return opts.MustOpen()
 	}
 
-	opts := ethdb.NewLMDB().Path(path)
+	opts := ethdb.NewMDBX().Path(path)
 	if exclusive {
 		opts = opts.Exclusive()
 	}
