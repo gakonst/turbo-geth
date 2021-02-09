@@ -93,7 +93,7 @@ type transport interface {
 
 // bucket contains nodes, ordered by their last activity. the entry
 // that was most recently active is the first element in entries.
-type bucket struct {
+type wbucket struct {
 	entries      []*node // live entries, sorted by time of last contact
 	replacements []*node // recently seen nodes to be used if revalidation fails
 	ips          netutil.DistinctNetSet

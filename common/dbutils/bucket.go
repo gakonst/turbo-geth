@@ -37,23 +37,23 @@ var (
 		[acc2_hash]             | [acc2_value]
 								...
 	*/
-	PlainStateBucket     = "plainState"
-	PlainStateBucketOld1 = "plainState"
+	PlainStateBucket     = "PlainState"
+	PlainStateBucketOld1 = "PlainState"
 
 	// "Plain State"
 	//key - address+incarnation
 	//value - code hash
-	PlainContractCodeBucket = "plainContractCode"
+	PlainContractCodeBucket = "PlainContractCode"
 
 	// PlainAccountChangeSetBucket keeps changesets of accounts ("plain state")
 	// key - encoded timestamp(block number)
 	// value - encoded ChangeSet{k - address v - account(encoded).
-	PlainAccountChangeSetBucket = "accountChangeSet"
+	PlainAccountChangeSetBucket = "AccountChangeSet"
 
 	// PlainStorageChangeSetBucket keeps changesets of storage ("plain state")
 	// key - encoded timestamp(block number)
 	// value - encoded ChangeSet{k - plainCompositeKey(for storage) v - originalValue(common.Hash)}.
-	PlainStorageChangeSetBucket = "storageChangeSet"
+	PlainStorageChangeSetBucket = "StorageChangeSet"
 
 	// Contains Accounts:
 	// key - address hash
@@ -61,54 +61,54 @@ var (
 	// Contains Storage:
 	//key - address hash + incarnation + storage key hash
 	//value - storage value(common.hash)
-	CurrentStateBucket     = "hashedState"
+	CurrentStateBucket     = "HashedState"
 	CurrentStateBucketOld1 = "CST"
 
 	//key - address + shard_id_u64
 	//value - roaring bitmap  - list of block where it changed
-	AccountsHistoryBucket = "accountHistory"
+	AccountsHistoryBucket = "AccountHistory"
 
 	//key - address + storage_key + shard_id_u64
 	//value - roaring bitmap - list of block where it changed
-	StorageHistoryBucket = "storageHistory"
+	StorageHistoryBucket = "StorageHistory"
 
 	//key - contract code hash
 	//value - contract code
-	CodeBucket = "code"
+	CodeBucket = "Code"
 
 	//key - addressHash+incarnation
 	//value - code hash
-	ContractCodeBucket = "contractCode"
+	ContractCodeBucket = "ContractCode"
 
 	// Incarnations for deleted accounts
 	//key - address
 	//value - incarnation of account when it was last deleted
-	IncarnationMapBucket = "incarnationMap"
+	IncarnationMapBucket = "IncarnationMap"
 
 	// some_prefix_of(hash_of_address_of_account) => hash_of_subtrie
-	IntermediateTrieHashBucket     = "trie"
+	IntermediateTrieHashBucket     = "Trie"
 	IntermediateTrieHashBucketOld1 = "iTh"
 
 	// DatabaseInfoBucket is used to store information about data layout.
-	DatabaseInfoBucket        = "dbInfo"
-	SnapshotInfoBucket        = "snapshotInfo"
-	HeadersSnapshotInfoBucket = "headersSnapshotInfo"
-	BodiesSnapshotInfoBucket  = "bodiesSnapshotInfo"
-	StateSnapshotInfoBucket   = "stateSnapshotInfo"
+	DatabaseInfoBucket        = "DbInfo"
+	SnapshotInfoBucket        = "SnapshotInfo"
+	HeadersSnapshotInfoBucket = "HeadersSnapshotInfo"
+	BodiesSnapshotInfoBucket  = "BodiesSnapshotInfo"
+	StateSnapshotInfoBucket   = "StateSnapshotInfo"
 
 	// databaseVerisionKey tracks the current database version.
-	DatabaseVerisionKey = "databaseVersion"
+	DatabaseVerisionKey = "DatabaseVersion"
 
 	// Data item prefixes (use single byte to avoid mixing data types, avoid `i`, used for indexes).
-	HeaderPrefix       = "blockHeader"       // block_num_u64 + hash -> header
+	HeaderPrefix       = "BlockHeader"       // block_num_u64 + hash -> header
 	HeaderTDSuffix     = []byte("t")         // block_num_u64 + hash + headerTDSuffix -> td
 	HeaderHashSuffix   = []byte("n")         // block_num_u64 + headerHashSuffix -> hash
 	HeaderNumberPrefix = "blockHeaderNumber" // headerNumberPrefix + hash -> num (uint64 big endian)
 
-	BlockBodyPrefix     = "blockBody"        // block_num_u64 + hash -> block body
-	EthTx               = "blockTransaction" // tbl_sequence_u64 -> rlp(tx)
-	BlockReceiptsPrefix = "receipt"          // block_num_u64 + hash -> block receipts
-	Log                 = "log"              // block_num_u64 + hash -> block receipts
+	BlockBodyPrefix     = "BlockBody"        // block_num_u64 + hash -> block body
+	EthTx               = "BlockTransaction" // tbl_sequence_u64 -> rlp(tx)
+	BlockReceiptsPrefix = "Receipt"          // block_num_u64 + hash -> block receipts
+	Log                 = "Log"              // block_num_u64 + hash -> block receipts
 
 	// Stores bitmap indices - in which block numbers saw logs of given 'address' or 'topic'
 	// [addr or topic] + [2 bytes inverted shard number] -> bitmap(blockN)
@@ -118,51 +118,51 @@ var (
 	// if last existing shard size merge it with delta
 	// if serialized size of delta > ShardLimit - break down to multiple shards
 	// shard number - it's biggest value in bitmap
-	LogTopicIndex   = "logTopicIndex"
-	LogAddressIndex = "logAddressIndex"
+	LogTopicIndex   = "LogTopicIndex"
+	LogAddressIndex = "LogAddressIndex"
 
 	// Indices for call traces - have the same format as LogTopicIndex and LogAddressIndex
 	// Store bitmap indices - in which block number we saw calls from (CallFromIndex) or to (CallToIndex) some addresses
-	CallFromIndex = "callFromIndex"
-	CallToIndex   = "callToIndex"
+	CallFromIndex = "CallFromIndex"
+	CallToIndex   = "CallToIndex"
 
-	TxLookupPrefix  = "blockTransactionLookup" // txLookupPrefix + hash -> transaction/receipt lookup metadata
-	BloomBitsPrefix = "bloomBits"              // bloomBitsPrefix + bit (uint16 big endian) + section (uint64 big endian) + hash -> bloom bits
+	TxLookupPrefix  = "BlockTransactionLookup" // txLookupPrefix + hash -> transaction/receipt lookup metadata
+	BloomBitsPrefix = "BloomBits"              // bloomBitsPrefix + bit (uint16 big endian) + section (uint64 big endian) + hash -> bloom bits
 
-	PreimagePrefix = "preimage" // preimagePrefix + hash -> preimage
-	ConfigPrefix   = "config"   // config prefix for the db
+	PreimagePrefix = "Preimage" // preimagePrefix + hash -> preimage
+	ConfigPrefix   = "Config"   // config prefix for the db
 
 	// Chain index prefixes (use `i` + single byte to avoid mixing data types).
-	BloomBitsIndexPrefix = "bloomBitsIndex" // BloomBitsIndexPrefix is the data table of a chain indexer to track its progress
+	BloomBitsIndexPrefix = "BloomBitsIndex" // BloomBitsIndexPrefix is the data table of a chain indexer to track its progress
 
 	// Progress of sync stages: stageName -> stageData
-	SyncStageProgress     = "syncStage"
+	SyncStageProgress     = "SyncStage"
 	SyncStageProgressOld1 = "SSP"
 	// Position to where to unwind sync stages: stageName -> stageData
-	SyncStageUnwind     = "syncStageUnwind"
+	SyncStageUnwind     = "SyncStageUnwind"
 	SyncStageUnwindOld1 = "SSU"
 
-	CliqueBucket = "clique"
+	CliqueBucket = "Clique"
 
 	// this bucket stored in separated database
-	InodesBucket = "inodes"
+	InodesBucket = "Inodes"
 
 	// Transaction senders - stored separately from the block bodies
-	Senders = "txSenders"
+	Senders = "TxSenders"
 
 	// fastTrieProgressKey tracks the number of trie entries imported during fast sync.
-	FastTrieProgressKey = "trieSync"
+	FastTrieProgressKey = "TrieSync"
 	// headBlockKey tracks the latest know full block's hash.
-	HeadBlockKey = "lastBlock"
+	HeadBlockKey = "LastBlock"
 	// headFastBlockKey tracks the latest known incomplete block's hash during fast sync.
-	HeadFastBlockKey = "lastFast"
+	HeadFastBlockKey = "LastFast"
 
 	// migrationName -> serialized SyncStageProgress and SyncStageUnwind buckets
 	// it stores stages progress to understand in which context was executed migration
 	// in case of bug-report developer can ask content of this bucket
-	Migrations = "migrations"
+	Migrations = "Migrations"
 
-	Sequence = "sequence" // tbl_name -> seq_u64
+	Sequence = "Sequence" // tbl_name -> seq_u64
 )
 
 // Keys
