@@ -43,7 +43,7 @@ var (
 	// "Plain State"
 	//key - address+incarnation
 	//value - code hash
-	PlainContractCodeBucket = "PlainContractCode"
+	PlainContractCodeBucket = "PlainCodeHash"
 
 	// PlainAccountChangeSetBucket keeps changesets of accounts ("plain state")
 	// key - encoded timestamp(block number)
@@ -78,7 +78,7 @@ var (
 
 	//key - addressHash+incarnation
 	//value - code hash
-	ContractCodeBucket = "ContractCode"
+	ContractCodeBucket = "HashedCodeHash"
 
 	// Incarnations for deleted accounts
 	//key - address
