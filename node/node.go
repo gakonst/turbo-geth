@@ -612,24 +612,24 @@ func (n *Node) OpenDatabaseWithFreezer(name string, _, _ int, _, _ string) (*eth
 		fmt.Printf("Opening In-memory Database (LMDB): %s\n", name)
 		db = ethdb.NewMemDatabase()
 	} else {
-		if n.config.MDBX {
-			log.Info("Opening Database (MDBX)", "mapSize", n.config.LMDBMapSize.HR())
-			dbPath, err := n.config.ResolvePath(name)
-			if err != nil {
-				return nil, err
-			}
-			kv, err := ethdb.NewMDBX().Path(dbPath).MapSize(n.config.LMDBMapSize).Open()
-			if err != nil {
-				return nil, err
-			}
-			db = ethdb.NewObjectDatabase(kv)
-		} else {
+		if n.config.LMDB {
 			log.Info("Opening Database (LMDB)", "mapSize", n.config.LMDBMapSize.HR(), "maxFreelistReuse", n.config.LMDBMaxFreelistReuse)
 			dbPath, err := n.config.ResolvePath(name)
 			if err != nil {
 				return nil, err
 			}
 			kv, err := ethdb.NewLMDB().Path(dbPath).MapSize(n.config.LMDBMapSize).MaxFreelistReuse(n.config.LMDBMaxFreelistReuse).Open()
+			if err != nil {
+				return nil, err
+			}
+			db = ethdb.NewObjectDatabase(kv)
+		} else {
+			log.Info("Opening Database (MDBX)", "mapSize", n.config.LMDBMapSize.HR())
+			dbPath, err := n.config.ResolvePath(name)
+			if err != nil {
+				return nil, err
+			}
+			kv, err := ethdb.NewMDBX().Path(dbPath).MapSize(n.config.LMDBMapSize).Open()
 			if err != nil {
 				return nil, err
 			}
